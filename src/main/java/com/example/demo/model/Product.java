@@ -8,6 +8,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Date importDate;
 
 
 
@@ -22,10 +23,11 @@ public class Product {
 
     public Product() {}
 
-    public Product(String name, double price, int quantity) {
+    public Product(String name, double price, int quantity,Date importDate) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
+        this.importDate = importDate;
 
 
     }
@@ -56,6 +58,12 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+    public Date getImportDate() {
+        return importDate;
+    }
+    public void setImportDate(Date importDate) {
+        this.importDate = importDate;
     }
 
 

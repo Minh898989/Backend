@@ -11,8 +11,8 @@ public class Food extends Product {
 
     public Food() {}
 
-    public Food(String name, double price, int quantity, Date expiryDate) {
-        super( name, price, quantity);  // Call the superclass (Product) constructor
+    public Food(String name, double price, int quantity,Date importDate, Date expiryDate) {
+        super( name, price, quantity,importDate);  // Call the superclass (Product) constructor
         this.expiryDate = expiryDate;
     }
 

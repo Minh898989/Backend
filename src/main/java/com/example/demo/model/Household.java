@@ -23,8 +23,8 @@ public class Household extends Product {
     public Household() {
     }
 
-    public Household(String name, double price, int quantity, String brand, String origin, String material) {
-        super(name, price, quantity);
+    public Household(String name, double price, int quantity,Date importDate, String brand, String origin, String material) {
+        super(name, price, quantity, importDate);
         this.brand = brand;
         this.origin = origin;
         this.material = material;

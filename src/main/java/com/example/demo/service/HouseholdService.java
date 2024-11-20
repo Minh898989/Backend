@@ -29,19 +29,32 @@ public class HouseholdService {
     }
 
     // Thêm mới sản phẩm gia dụng
+    // Thêm mới sản phẩm gia dụng hoặc cộng dồn số lượng nếu sản phẩm đã tồn tại
     public Household addHousehold(Household household) {
-        return householdRepository.save(household);
+        // Tìm sản phẩm theo tên
+        Optional<Household> existingHousehold = householdRepository.findByName(household.getName());
+
+        if (existingHousehold.isPresent()) {
+            // Nếu sản phẩm đã tồn tại, cộng dồn số lượng
+            Household existing = existingHousehold.get();
+            existing.setQuantity(existing.getQuantity() + household.getQuantity());
+            return householdRepository.save(existing);
+        } else {
+            // Nếu sản phẩm chưa tồn tại, tạo mới
+            return householdRepository.save(household);
+        }
     }
+
 
     // Cập nhật thông tin sản phẩm gia dụng
     public Household updateHousehold(Long id, Household householdDetails) {
-        // Kiểm tra sản phẩm gia dụng có tồn tại hay không
+
         return householdRepository.findById(id)
                 .map(existingHousehold -> {
                     existingHousehold.setName(householdDetails.getName());
                     existingHousehold.setPrice(householdDetails.getPrice());
                     existingHousehold.setQuantity(householdDetails.getQuantity());
-
+                    existingHousehold.setImportDate(householdDetails.getImportDate());
                     existingHousehold.setBrand(householdDetails.getBrand());
                     existingHousehold.setOrigin(householdDetails.getOrigin());
                     existingHousehold.setMaterial(householdDetails.getMaterial());

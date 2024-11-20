@@ -47,6 +47,7 @@ public class FoodController {
     public ResponseEntity<Food> updateFood(@PathVariable Long id, @RequestBody Food foodDetails) {
         try {
             Food updatedFood = foodService.updateFood(id, foodDetails);
+
             return ResponseEntity.ok(updatedFood);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
