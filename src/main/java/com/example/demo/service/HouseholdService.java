@@ -41,6 +41,7 @@ public class HouseholdService {
                     existingHousehold.setName(householdDetails.getName());
                     existingHousehold.setPrice(householdDetails.getPrice());
                     existingHousehold.setQuantity(householdDetails.getQuantity());
+
                     existingHousehold.setBrand(householdDetails.getBrand());
                     existingHousehold.setOrigin(householdDetails.getOrigin());
                     existingHousehold.setMaterial(householdDetails.getMaterial());

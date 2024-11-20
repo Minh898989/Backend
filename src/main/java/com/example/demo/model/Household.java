@@ -1,5 +1,5 @@
 package com.example.demo.model;
-
+import java.util.Date;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
@@ -28,6 +28,7 @@ public class Household extends Product {
         this.brand = brand;
         this.origin = origin;
         this.material = material;
+
     }
 
     // Getters and Setters
@@ -54,5 +55,6 @@ public class Household extends Product {
     public void setMaterial(String material) {
         this.material = material;
     }
+
 }
 

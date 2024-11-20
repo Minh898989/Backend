@@ -14,8 +14,11 @@ public class Invoice {
 
     @Temporal(TemporalType.DATE)
     private Date purchaseDate;
-
-    @ManyToOne
+    private String customerName;
+    private String phone;
+    private String address;
+    @Column(name = "purchase_count", nullable = false)
+    private int purchaseCount;     @ManyToOne
     private Employee employee;
 
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
@@ -24,11 +27,14 @@ public class Invoice {
     public Invoice() {}
     private double totalAmount;
 
-    public Invoice(Date purchaseDate, Employee employee, List<InvoiceItem> items) {
+    public Invoice(Date purchaseDate, Employee employee, List<InvoiceItem> items,String customerName, String phone,String address) {
         this.purchaseDate = purchaseDate;
         this.employee = employee;
         this.items = items;
         this.totalAmount = getTotalAmount();
+        this.customerName = customerName;
+        this.phone = phone;
+        this.address = address;
     }
 
     // Getters and Setters
@@ -78,4 +84,32 @@ public class Invoice {
                 .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum();
     }
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+    public String getPhone() {
+        return phone;
+    }
+    public void setPhone(String phone) {
+       this. phone = phone;
+    }
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    public int getPurchaseCount() {
+        return purchaseCount;
+    }
+
+    public void setPurchaseCount(int purchaseCount) {
+        this.purchaseCount = purchaseCount;
+    }
+
+
 }

@@ -1,6 +1,6 @@
 package com.example.demo.model;
 import jakarta.persistence.*;
-
+import java.util.Date;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Product {
@@ -8,6 +8,8 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
 
     private int stockQuantity;
     private String name;
@@ -24,6 +26,7 @@ public class Product {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
+
 
     }
 
@@ -54,13 +57,8 @@ public class Product {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    public int getStockQuantity() {
-        return stockQuantity;
-    }
 
-    public void setStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
+
 
 
 

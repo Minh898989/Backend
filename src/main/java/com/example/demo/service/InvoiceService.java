@@ -29,65 +29,83 @@ public class InvoiceService {
 
 
 
+
     // Hàm tạo hóa đơn
-        public InvoiceResponse createInvoice(InvoiceRequest invoiceRequest) {
+    public InvoiceResponse createInvoice(InvoiceRequest invoiceRequest) {
 
-            // Tìm nhân viên từ ID
-            Employee employee = employeeRepository.findById(invoiceRequest.getEmployeeId())
-                    .orElseThrow(() -> new RuntimeException("Employee not found"));
+        // Tìm nhân viên từ ID
+        Employee employee = employeeRepository.findById(invoiceRequest.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-            // Chuyển đổi từ InvoiceRequest sang Invoice
-            Invoice invoice = new Invoice();
-            invoice.setPurchaseDate(invoiceRequest.getPurchaseDate());
-            invoice.setEmployee(employee);
+        Optional<Invoice> existingInvoice = invoiceRepository.findByCustomerNameAndPhone(
+                invoiceRequest.getCustomerName(), invoiceRequest.getPhone());
 
-            // Chuyển đổi danh sách sản phẩm từ ProductDetail
-            Invoice finalInvoice = invoice;
-            List<InvoiceItem> items = invoiceRequest.getProducts().stream()
-                    .map(productDetail -> {
+        int purchaseCount = existingInvoice.map(Invoice::getPurchaseCount).orElse(0) + 1;
+        Invoice invoice = new Invoice();
+        invoice.setCustomerName(invoiceRequest.getCustomerName());
+        invoice.setPhone(invoiceRequest.getPhone());
+        invoice.setAddress(invoiceRequest.getAddress());
+        invoice.setPurchaseDate(invoiceRequest.getPurchaseDate());
+        invoice.setEmployee(employee);
+        invoice.setPurchaseCount(purchaseCount);
 
-                        productService.reduceStock(productDetail.getName(), productDetail.getQuantity());
-                        productService.checkFoodExpiry(productDetail.getName(), today);
-                        // Tạo InvoiceItem
-                        Product product = productRepository.findByName(productDetail.getName())
-                                .orElseThrow(() -> new RuntimeException("Product not found"));
-                        InvoiceItem item = new InvoiceItem();
-                        item.setProduct(productRepository.findByName(productDetail.getName())
-                                .orElseThrow(() -> new RuntimeException("Product not found")));
-                        item.setQuantity(productDetail.getQuantity());
-                        item.setInvoice(finalInvoice);
+        // Chuyển đổi từ InvoiceRequest sang Invoice
+
+        // Chuyển đổi danh sách sản phẩm từ ProductDetail
+        Invoice finalInvoice = invoice;
+        List<InvoiceItem> items = invoiceRequest.getProducts().stream()
+                .map(productDetail -> {
+
+                    productService.reduceStock(productDetail.getName(), productDetail.getQuantity());
+                    productService.checkFoodExpiry(productDetail.getName(), today);
+                    // Tạo InvoiceItem
+                    Product product = productRepository.findByName(productDetail.getName())
+                            .orElseThrow(() -> new RuntimeException("Product not found"));
+                    InvoiceItem item = new InvoiceItem();
+                    item.setProduct(productRepository.findByName(productDetail.getName())
+                            .orElseThrow(() -> new RuntimeException("Product not found")));
+                    item.setQuantity(productDetail.getQuantity());
+                    item.setInvoice(finalInvoice);
 
 
 
 
 
 
-                        return item;
-                    })
-                    .collect(Collectors.toList());
 
-            // Gắn các sản phẩm vào hóa đơn
-            invoice.setItems(items);
+                    return item;
+                })
+                .collect(Collectors.toList());
 
-            // Tính tổng tiền hóa đơn
-            invoice.setTotalAmount(invoice.getTotalAmount());
+        // Gắn các sản phẩm vào hóa đơn
+        invoice.setItems(items);
 
-            // Lưu hóa đơn vào cơ sở dữ liệu
-            invoice = invoiceRepository.save(invoice);
+        // Tính tổng tiền hóa đơn
+        invoice.setTotalAmount(invoice.getTotalAmount());
 
-            // Chuyển hóa đơn thành InvoiceResponse
-            InvoiceResponse response = new InvoiceResponse(
-                    invoice.getId(),
-                    invoice.getEmployee().getName(),
-                    invoice.getPurchaseDate(),
-                    items.stream()
-                            .map(item -> new ProductDetail(item.getProduct().getName(), item.getQuantity(), item.getProduct().getPrice()))
-                            .collect(Collectors.toList()),
-                    invoice.getTotalAmount()
-            );
+        // Lưu hóa đơn vào cơ sở dữ liệu
+        invoice = invoiceRepository.save(invoice);
 
-            return response;
-        }
+        // Chuyển hóa đơn thành InvoiceResponse
+        InvoiceResponse response = new InvoiceResponse(
+                invoice.getId(),
+                invoice.getEmployee().getName(),
+                invoice.getCustomerName(),
+                invoice.getPurchaseDate(),
+                items.stream()
+                        .map(item -> new ProductDetail(item.getProduct().getName(), item.getQuantity(), item.getProduct().getPrice()))
+                        .collect(Collectors.toList()),
+                invoice.getTotalAmount(),
+                invoice.getPhone(),
+                invoice.getAddress(),
+                invoice.getPurchaseCount()
+        );
+
+        return response;
+    }
+
+
+
     public InvoiceResponse getInvoice(Long invoiceId) {
         // Tìm hóa đơn theo ID
         Invoice invoice = invoiceRepository.findById(invoiceId)
@@ -97,11 +115,16 @@ public class InvoiceService {
         return new InvoiceResponse(
                 invoice.getId(),
                 invoice.getEmployee().getName(),
+                invoice.getCustomerName(),
                 invoice.getPurchaseDate(),
                 invoice.getItems().stream()
                         .map(item -> new ProductDetail(item.getProduct().getName(), item.getQuantity(), item.getProduct().getPrice()))
                         .collect(Collectors.toList()),
-                invoice.getTotalAmount()
+                invoice.getTotalAmount(),
+
+                invoice.getPhone(),
+                invoice.getAddress(),
+                invoice.getPurchaseCount()
         );
     }
     public List<InvoiceResponse> getAllInvoices() {
@@ -113,18 +136,23 @@ public class InvoiceService {
                 .map(invoice -> new InvoiceResponse(
                         invoice.getId(),
                         invoice.getEmployee().getName(),
+                        invoice.getCustomerName(),
                         invoice.getPurchaseDate(),
                         invoice.getItems().stream()
                                 .map(item -> new ProductDetail(item.getProduct().getName(), item.getQuantity(), item.getProduct().getPrice()))
                                 .collect(Collectors.toList()),
-                        invoice.getTotalAmount()))
+                        invoice.getTotalAmount(),
+                        invoice.getPhone(),
+                        invoice.getAddress(),
+                        invoice.getPurchaseCount())
+
+
+
+                )
+
+
                 .collect(Collectors.toList());
     }
 
 
 }
-
-
-
-
-
