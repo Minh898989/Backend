@@ -22,6 +22,9 @@ public class EmployeeService {
     }
 
     public Employee createEmployee(Employee employee) {
+        if (employeeRepository.findByPhone(employee.getPhone()).isPresent()) {
+            throw new IllegalArgumentException("Phone number already exists!");
+        }
         return employeeRepository.save(employee);
     }
 
