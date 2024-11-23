@@ -37,8 +37,8 @@ public class InvoiceService {
         Employee employee = employeeRepository.findById(invoiceRequest.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        Optional<Invoice> existingInvoice = invoiceRepository.findByCustomerNameAndPhone(
-                invoiceRequest.getCustomerName(), invoiceRequest.getPhone());
+        Optional<Invoice> existingInvoice = invoiceRepository.findByPhone(
+                 invoiceRequest.getPhone());
 
         int purchaseCount = existingInvoice.map(Invoice::getPurchaseCount).orElse(0) + 1;
         Invoice invoice = new Invoice();

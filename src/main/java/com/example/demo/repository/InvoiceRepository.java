@@ -4,7 +4,7 @@ import com.example.demo.model.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.*;
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
-    Optional<Invoice> findByCustomerNameAndPhone(String customerName, String phone);
+    Optional<Invoice> findByPhone( String phone);
 
 
 }
